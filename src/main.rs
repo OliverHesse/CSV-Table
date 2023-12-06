@@ -1,3 +1,5 @@
+use core::panic;
+
 
 
 #[derive(Debug)]
@@ -53,21 +55,22 @@ fn load_csv_into_table(file_path : String) -> Table{
 
     //first row must be the meta data for our file
     let table_meta_data = iter.next();
-    println!("{}",table_meta_data.unwrap().trim());
+    
 
     //splits into individual columns
     let table_meta_data = split_as_vec(String::from(table_meta_data.unwrap().trim()), ",");
-    println!("{:?}",table_meta_data);
-
+    
     //if it is empty then no meta data is provided
     if table_meta_data[0] == ""{panic!("no meta data was provided");}
     //now i will loop through each piece of meta_data. and then split them.
     //they should be in the format column_name:data_type
     let mut new_column_meta_data_map = std::collections::HashMap::<String,ColumnMetaData>::new();
-    
+    let mut number_of_columns= 0;
+
+    let mut temp_id_to_type_map = std::collections::HashMap::<usize,String>::new();
     for (i,meta_data) in table_meta_data.iter().enumerate(){
         let meta_split = split_as_vec(meta_data.clone(), ":");
-        println!("{:?}",meta_split);
+        
         if meta_split.len() > 2 || meta_split.len() < 2{
             //we expect 2 paramaters
             panic!("expected 2 params. provided {:?}",meta_split.len());
@@ -88,13 +91,56 @@ fn load_csv_into_table(file_path : String) -> Table{
             "float"=>{column_type = String::from(meta_split[1].clone())},
             _=>{panic!("unknown column type of {}",meta_split[1])}
         }
-        let index =  u32::try_from(i)
-        .ok()
-        .expect("index is out of bounds");
-        
-        new_column_meta_data_map.insert(meta_split[0].clone(), ColumnMetaData{column_type,column_id:index});
-        
+        let index =  match u32::try_from(i){
+            Ok(v) =>v,
+            Err(_) =>panic!("error casting values"),
+        };
+ 
+        new_column_meta_data_map.insert(meta_split[0].clone(), ColumnMetaData{column_type:column_type.clone(),column_id:index});
+        temp_id_to_type_map.insert(i,column_type);
+        number_of_columns += 1;
+    }
 
+
+    let rows = Vec::<Vec<TableType>>::new();
+    for (i,row) in iter.enumerate(){
+        //now time to make the actual ROWS YAAAAAAAAAAAAAAAAAAAAAAAAAY
+        let row_vec = split_as_vec(row.clone(), ",");
+        //now i need to validate the row
+        if row_vec.len() != number_of_columns{
+            panic!("not enough columns provided in table row {}",i);
+        }
+        
+        //now i need to loop through each column
+        let new_row = Vec::<TableType>::new();
+        for (column_i,column) in row_vec.iter().enumerate(){
+            
+            if column == ""{
+                panic!("empty column found in table row {}",i);
+            }
+            //now i will check the data type of the column
+            match temp_id_to_type_map.get(&column_i){
+                Some(v) =>{match v.as_str() {
+                    "int"=>{
+                        println!("this column should be an int")
+
+                    },
+                    "str"=>{
+                        println!("this column should be an str")
+                    },
+                    "bool"=>{
+                        println!("this column should be an bool")
+                    },
+                    "float"=>{
+                        println!("this column should be an float")
+                    },
+                    
+                    _=>{panic!("invalid data type found on row {} in column {}",i,column_i)},
+                }},
+                None =>{panic!("error parsing row on line {} column id of {} was not found",i,column_i)}
+            }
+        }
+        
     }
     println!("{:?}",new_column_meta_data_map);
     //temporary to provide a return value
