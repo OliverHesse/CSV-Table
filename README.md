@@ -14,5 +14,5 @@ TODO LIST:<br>
 - allow for a setup file
 - create access methods and editing methods(eg SELECT,INSERT,DELETE,UPDATE)
 - combine with a custom SQL parser
-- allow for conditional access/editing methods
+- allow for conditional access/editing methods(eg WHERE ID >2 AND Name == Generic Name)
 - use supporting HashMaps and binary trees to speed up access times when using conditional statements
