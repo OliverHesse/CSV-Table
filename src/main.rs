@@ -27,18 +27,9 @@ struct Table {
 fn split_as_vec(data : String,pat: &str ) -> Vec<String>{
     data.split(pat).map(|s| s.to_string()).collect()}
 fn main() {
-    println!("Hello, world!");
-    let mut vec = Vec::<TableType>::new();
-    vec.push(TableType::Int(2));
-    vec.push(TableType::Bool(false));
-    vec.push(TableType::Str(String::from("This is text")));
-    println!("{:?}", vec);
-    let mut new_table = Table{rows:vec![vec],column_meta_data:None};
-    println!("{:?}", new_table);
+    println!("==Running Test Environment==");
     let input_file_name = String::from("C:/programming/rust/Projects/CSVToTable/src/test_table.csv");
 
-
-    println!("in the file{}",input_file_name);
     load_csv_into_table(input_file_name);
 
 }
@@ -58,7 +49,7 @@ fn load_csv_into_table(file_path : String) -> Table{
     
 
     //splits into individual columns
-    let table_meta_data = split_as_vec(String::from(table_meta_data.unwrap().trim()), ",");
+    let table_meta_data: Vec<String> = split_as_vec(String::from(table_meta_data.unwrap().trim()), ",");
     
     //if it is empty then no meta data is provided
     if table_meta_data[0] == ""{panic!("no meta data was provided");}
@@ -102,17 +93,18 @@ fn load_csv_into_table(file_path : String) -> Table{
     }
 
 
-    let rows = Vec::<Vec<TableType>>::new();
+    let mut rows = Vec::<Vec<TableType>>::new();
     for (i,row) in iter.enumerate(){
         //now time to make the actual ROWS YAAAAAAAAAAAAAAAAAAAAAAAAAY
-        let row_vec = split_as_vec(row.clone(), ",");
+        let row_vec = split_as_vec(String::from(row.trim()), ",");
+        
         //now i need to validate the row
         if row_vec.len() != number_of_columns{
             panic!("not enough columns provided in table row {}",i);
         }
         
         //now i need to loop through each column
-        let new_row = Vec::<TableType>::new();
+        let mut new_row = Vec::<TableType>::new();
         for (column_i,column) in row_vec.iter().enumerate(){
             
             if column == ""{
@@ -122,27 +114,49 @@ fn load_csv_into_table(file_path : String) -> Table{
             match temp_id_to_type_map.get(&column_i){
                 Some(v) =>{match v.as_str() {
                     "int"=>{
-                        println!("this column should be an int")
-
+                       
+                        let new_value = match row_vec[column_i].parse::<i64>(){
+                            Ok(n)=>{n},
+                            Err(_)=>{panic!("error when parsing {} to int on line {} in column {}",row_vec[column_i],i,column_i)},
+                        };
+                        new_row.push(TableType::Int(new_value));
                     },
                     "str"=>{
-                        println!("this column should be an str")
+                        
+                        //no casting needed here lol
+                        new_row.push(TableType::Str(row_vec[column_i].clone()));
                     },
                     "bool"=>{
-                        println!("this column should be an bool")
+                        
+                        let new_value = match row_vec[column_i].parse::<bool>(){
+                            Ok(n)=>{n},
+                            Err(_)=>{panic!("error when parsing {} to bool on line {} in column {}",row_vec[column_i],i,column_i)},
+                        };
+                        new_row.push(TableType::Bool(new_value));
                     },
                     "float"=>{
-                        println!("this column should be an float")
+                        
+                        let new_value = match row_vec[column_i].parse::<f64>(){
+                            Ok(n)=>{n},
+                            Err(_)=>{panic!("error when parsing {} to int on line {} in column {}",row_vec[column_i],i,column_i)},
+                        };
+                        new_row.push(TableType::Float(new_value));
                     },
                     
                     _=>{panic!("invalid data type found on row {} in column {}",i,column_i)},
                 }},
                 None =>{panic!("error parsing row on line {} column id of {} was not found",i,column_i)}
             }
+            
         }
+        //move new row into rows
+        rows.push(new_row);
         
     }
+    println!("==Column Meta Data== ");
     println!("{:?}",new_column_meta_data_map);
+    println!("==Table Data==");
+    println!("{:?}",rows);
     //temporary to provide a return value
     let vec = Vec::<TableType>::new();
     Table{rows:vec![vec],column_meta_data:None}

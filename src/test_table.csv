@@ -1,4 +1,4 @@
 id:int,data:str,valid:bool,balance:float
-1,Account1,True,20.23
-2,Account2,False,200
-3,Account3,False,30
+1,Account1,true,20.23
+2,Account2,false,200
+3,Account3,false,30
