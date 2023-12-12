@@ -1,5 +1,5 @@
 use core::panic;
-
+pub mod custom_binary_tree;
 
 
 #[derive(Debug)]
@@ -30,7 +30,22 @@ fn main() {
     println!("==Running Test Environment==");
     let input_file_name = String::from("C:/programming/rust/Projects/CSVToTable/src/test_table.csv");
 
-    load_csv_into_table(input_file_name);
+    //testing my binary tree
+    println!("==Creating new Tree==");
+    let mut test_tree = custom_binary_tree::ColumnBinaryTree::<i64>{root:None,size:0};
+    test_tree.push(4, 0);
+    test_tree.push(2, 0);
+    test_tree.push(7, 0);
+    test_tree.push(3, 0);
+    test_tree.push(1, 0);
+    test_tree.print();
+    println!("==End of Tree==");
+    //testing my table
+    let My_Table = load_csv_into_table(input_file_name);
+    println!("==Column Meta Data== ");
+    println!("{:?}",My_Table.column_meta_data.unwrap());
+    println!("==Table Data==");
+    println!("{:?}",My_Table.rows);
 
 }
 
@@ -92,7 +107,7 @@ fn load_csv_into_table(file_path : String) -> Table{
         number_of_columns += 1;
     }
 
-
+    //here i will construct the rest of the table
     let mut rows = Vec::<Vec<TableType>>::new();
     for (i,row) in iter.enumerate(){
         //now time to make the actual ROWS YAAAAAAAAAAAAAAAAAAAAAAAAAY
@@ -153,11 +168,8 @@ fn load_csv_into_table(file_path : String) -> Table{
         rows.push(new_row);
         
     }
-    println!("==Column Meta Data== ");
-    println!("{:?}",new_column_meta_data_map);
-    println!("==Table Data==");
-    println!("{:?}",rows);
+
     //temporary to provide a return value
-    let vec = Vec::<TableType>::new();
-    Table{rows:vec![vec],column_meta_data:None}
+    
+    Table{rows,column_meta_data:Some(new_column_meta_data_map)}
 }
