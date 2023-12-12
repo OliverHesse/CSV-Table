@@ -39,6 +39,7 @@ fn main() {
     test_tree.push(3, 0);
     test_tree.push(1, 0);
     test_tree.print();
+    test_tree.itertative_print();
     println!("==End of Tree==");
     //testing my table
     let My_Table = load_csv_into_table(input_file_name);

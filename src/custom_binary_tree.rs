@@ -1,7 +1,7 @@
 
 #[derive(Debug)]
 pub struct Node<T>{
-    value: T,
+    value: T,   
     row:Vec<usize>,
     right: Option<Box<Node<T>>>,
     left:Option<Box<Node<T>>>,
@@ -88,7 +88,28 @@ impl<T:std::cmp::PartialEq+std::cmp::PartialOrd+Clone+std::fmt::Debug> ColumnBin
         //whilst im trying to not do things recursively i cant find a way not to for print   
         println!("{:?}",self.root.as_ref().unwrap().get_all()); 
     } 
-
+    pub fn itertative_print(&self){
+        if self.root.is_some(){
+            let mut output_vev = Vec::<T>::new();
+            let mut node_stack = vec![self.root.as_ref().unwrap()];
+            while node_stack.len() != 0 {
+                //retrieve current node and push back in its left and right nodes
+                let current_node = node_stack.pop().unwrap();
+                output_vev.push(current_node.value.clone());
+                if current_node.right.is_some(){
+                    
+                    node_stack.push(&**(current_node.right.as_ref().unwrap()));
+                
+                }
+                if current_node.left.is_some(){
+                    node_stack.push(&**(current_node.left.as_ref().unwrap()));
+                }                
+            } 
+            println!("{:?}",output_vev);
+        }else {
+            println!("[]");
+        }
+    }
 }
 
 
