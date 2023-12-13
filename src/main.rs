@@ -33,14 +33,15 @@ fn main() {
     //testing my binary tree
     println!("==Creating new Tree==");
     let mut test_tree = custom_binary_tree::ColumnBinaryTree::<i64>{root:None,size:0};
-    test_tree.push(4, 0);
-    test_tree.push(2, 0);
-    test_tree.push(7, 0);
-    test_tree.push(3, 0);
-    test_tree.push(1, 0);
+    test_tree.push(4, 1);
+    test_tree.push(2, 2);
+    test_tree.push(7, 3);
+    test_tree.push(3, 4);
+    test_tree.push(1, 5);
     test_tree.print();
     test_tree.iterative_print();
     test_tree.in_order_iterative_print();
+    let new = test_tree.get_rows(2,">=");
     println!("==End of Tree==");
     //testing my table
     let My_Table = load_csv_into_table(input_file_name);

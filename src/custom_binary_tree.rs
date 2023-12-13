@@ -1,3 +1,5 @@
+use std::fmt::Error;
+
 
 #[derive(Debug)]
 pub struct Node<T>{
@@ -136,6 +138,132 @@ impl<T:std::cmp::PartialEq+std::cmp::PartialOrd+Clone+std::fmt::Debug> ColumnBin
         }else {
             println!("[]");
         }
+    }
+    pub fn get_vals(&self,value:T,operator:&str) -> Vec<T> {
+        //assuming expression node val operator value
+        if self.root.is_some(){
+            let mut output_vev = Vec::<T>::new();
+            let mut node_stack =Vec::<&Node<T>>::new();
+            let mut curr = Some(self.root.as_ref().unwrap());
+            while node_stack.len() != 0 || curr.is_some(){
+                if curr.is_some(){
+                    node_stack.push(curr.unwrap());
+                    if curr.unwrap().left.is_some(){
+                        curr = Some(&**(curr.unwrap().left.as_ref().unwrap()));
+
+                    }else{curr = None;}
+                    
+                    
+
+                }else{
+                        
+                    curr = node_stack.pop();
+                    let mut should_push = false;
+                    match operator{
+                        "==" =>{
+                            if curr.unwrap().value == value{
+                                should_push = true;
+                            }else{}
+                        },
+                        ">="=>{
+                            if curr.unwrap().value >= value{
+                                should_push = true;
+                            }
+                        },
+                        "<="=>{
+                            if curr.unwrap().value <= value{
+                                should_push = true;
+                            }
+                        },
+                        ">"=>{
+                            if curr.unwrap().value > value{
+                                should_push = true;
+                            }
+                        },
+                        "<"=>{
+                            if curr.unwrap().value < value{
+                                should_push = true;
+                            }
+                        },
+                        _ =>{panic!("unexpected operator");},
+                    }
+                    if should_push{
+                        output_vev.push(curr.as_ref().unwrap().value.clone());
+                    }
+                    if curr.unwrap().right.is_some(){
+                        curr = Some(&**(curr.unwrap().right.as_ref().unwrap()));
+                    }else{curr = None;}
+                    
+                }
+            }
+            println!("{:?}",output_vev);
+            return output_vev;
+        }else{
+            return Vec::<T>::new();
+        }
+    }
+    pub fn get_rows(&self,value:T,operator:&str) -> Vec<usize>{
+        //assuming expression node val operator value
+        if self.root.is_some(){
+            let mut output_vev = Vec::<usize>::new();
+            let mut node_stack =Vec::<&Node<T>>::new();
+            let mut curr = Some(self.root.as_ref().unwrap());
+            while node_stack.len() != 0 || curr.is_some(){
+                if curr.is_some(){
+                    node_stack.push(curr.unwrap());
+                    if curr.unwrap().left.is_some(){
+                        curr = Some(&**(curr.unwrap().left.as_ref().unwrap()));
+
+                    }else{curr = None;}
+                    
+                    
+
+                }else{
+                        
+                    curr = node_stack.pop();
+                    let mut should_push = false;
+                    match operator{
+                        "==" =>{
+                            if curr.unwrap().value == value{
+                                should_push = true;
+                            }else{}
+                        },
+                        ">="=>{
+                            if curr.unwrap().value >= value{
+                                should_push = true;
+                            }
+                        },
+                        "<="=>{
+                            if curr.unwrap().value <= value{
+                                should_push = true;
+                            }
+                        },
+                        ">"=>{
+                            if curr.unwrap().value > value{
+                                should_push = true;
+                            }
+                        },
+                        "<"=>{
+                            if curr.unwrap().value < value{
+                                should_push = true;
+                            }
+                        },
+                        _ =>{panic!("unexpected operator");},
+                    }
+                    if should_push{
+                        output_vev.append(&mut curr.as_ref().unwrap().row.clone());
+                    }
+                    if curr.unwrap().right.is_some(){
+                        curr = Some(&**(curr.unwrap().right.as_ref().unwrap()));
+                    }else{curr = None;}
+                    
+                }
+            }
+            println!("{:?}",output_vev);
+            return output_vev
+        }else{
+            return Vec::<usize>::new();
+        }        
     }
 }
 
