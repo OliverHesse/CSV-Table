@@ -88,7 +88,7 @@ impl<T:std::cmp::PartialEq+std::cmp::PartialOrd+Clone+std::fmt::Debug> ColumnBin
         //whilst im trying to not do things recursively i cant find a way not to for print   
         println!("{:?}",self.root.as_ref().unwrap().get_all()); 
     } 
-    pub fn itertative_print(&self){
+    pub fn iterative_print(&self){
         if self.root.is_some(){
             let mut output_vev = Vec::<T>::new();
             let mut node_stack = vec![self.root.as_ref().unwrap()];
@@ -105,6 +105,33 @@ impl<T:std::cmp::PartialEq+std::cmp::PartialOrd+Clone+std::fmt::Debug> ColumnBin
                     node_stack.push(&**(current_node.left.as_ref().unwrap()));
                 }                
             } 
+            println!("{:?}",output_vev);
+        }else {
+            println!("[]");
+        }
+    }
+    pub fn in_order_iterative_print(&self){
+        if self.root.is_some(){
+            let mut output_vev = Vec::<T>::new();
+            let mut node_stack =Vec::<&Node<T>>::new();
+            let mut curr = Some(self.root.as_ref().unwrap());
+            while node_stack.len() != 0 || curr.is_some(){
+                if curr.is_some(){
+                    node_stack.push(curr.unwrap());
+                    if curr.unwrap().left.is_some(){
+                        curr = Some(&**(curr.unwrap().left.as_ref().unwrap()));
+
+                    }else{curr = None;}
+                }else{
+                        
+                    curr = node_stack.pop();
+                    output_vev.push(curr.as_ref().unwrap().value.clone());
+                    if curr.unwrap().right.is_some(){
+                        curr = Some(&**(curr.unwrap().right.as_ref().unwrap()));
+                    }else{curr = None;}
+                    
+                }
+            }
             println!("{:?}",output_vev);
         }else {
             println!("[]");
